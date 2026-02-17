@@ -17,7 +17,7 @@ router.get("/test", (req, res) => {
 ========================= */
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password, isAdmin } = req.body;
+    let { name, email, password, isAdmin } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({
@@ -25,6 +25,8 @@ router.post("/register", async (req, res) => {
         message: "All fields are required",
       });
     }
+
+    email = email.toLowerCase();
 
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -40,7 +42,7 @@ router.post("/register", async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      isAdmin: isAdmin || false, // 👈 added
+      isAdmin: Boolean(isAdmin),
     });
 
     res.status(201).json({
@@ -54,9 +56,10 @@ router.post("/register", async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("REGISTER ERROR:", error);
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Registration failed",
     });
   }
 });
@@ -66,7 +69,7 @@ router.post("/register", async (req, res) => {
 ========================= */
 router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({
@@ -74,6 +77,8 @@ router.post("/login", async (req, res) => {
         message: "Email and password are required",
       });
     }
+
+    email = email.toLowerCase();
 
     const user = await User.findOne({ email });
     if (!user) {
@@ -99,7 +104,7 @@ router.post("/login", async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user._id, isAdmin: user.isAdmin }, // 👈 added isAdmin
+      { id: user._id, isAdmin: user.isAdmin },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
     );
@@ -115,19 +120,22 @@ router.post("/login", async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("LOGIN ERROR:", error);
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Login failed",
     });
   }
 });
 
 /* =========================
-   ADMIN LOGIN (OPTIONAL SEPARATE)
+   ADMIN LOGIN
 ========================= */
 router.post("/admin/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+
+    email = email.toLowerCase();
 
     const user = await User.findOne({ email });
 
@@ -158,9 +166,10 @@ router.post("/admin/login", async (req, res) => {
       message: "Admin login successful",
     });
   } catch (error) {
+    console.error("ADMIN LOGIN ERROR:", error);
     res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Admin login failed",
     });
   }
 });

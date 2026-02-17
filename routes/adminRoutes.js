@@ -1,9 +1,12 @@
 const express = require("express");
 const router = express.Router();
 
-// test route
+// TEST ROUTE
 router.get("/", (req, res) => {
-  res.json({ message: "Admin route working" });
+  res.status(200).json({
+    success: true,
+    message: "Admin route working",
+  });
 });
 
 module.exports = router;
