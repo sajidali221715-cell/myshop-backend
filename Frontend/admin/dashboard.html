@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f4f4;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h2 {
+            margin: 0;
+        }
+
+        header button {
+            padding: 6px 12px;
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            margin-top: 0;
+        }
+
+        .card a {
+            display: inline-block;
+            margin-top: 10px;
+            text-decoration: none;
+            background: #222;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+        }
+
+        .card a:hover {
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2>Admin Dashboard</h2>
+    <button onclick="adminLogout()">Logout</button>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h3>Manage Products</h3>
+        <p>Add, edit, or delete products</p>
+        <a href="#">Go to Products</a>
+    </div>
+
+    <div class="card">
+        <h3>View Orders</h3>
+        <p>Check all user orders</p>
+        <a href="orders.html">View Orders</a>
+    </div>
+
+    <div class="card">
+        <h3>Users</h3>
+        <p>View registered users</p>
+        <a href="#">View Users</a>
+    </div>
+
+</div>
+
+<script src="admin.js"></script>
+<script>
+    // 🔐 Protect dashboard
+    checkAdminAuth();
+</script>
+
+</body>
+</html>

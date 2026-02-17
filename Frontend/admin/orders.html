@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Orders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f4f4;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h2 {
+            margin: 0;
+        }
+
+        header button {
+            padding: 6px 12px;
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .container {
+            padding: 20px;
+        }
+
+        .order {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        .order h3 {
+            margin-top: 0;
+        }
+
+        .item {
+            margin-left: 15px;
+            font-size: 14px;
+        }
+
+        .empty {
+            text-align: center;
+            font-size: 18px;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2>All Orders</h2>
+    <button onclick="adminLogout()">Logout</button>
+</header>
+
+<div class="container" id="ordersContainer">
+    <!-- Orders will load here -->
+</div>
+
+<script src="admin.js"></script>
+<script>
+    // 🔐 Protect admin page
+    checkAdminAuth();
+
+    const ordersContainer = document.getElementById("ordersContainer");
+
+    // ⚠️ TEMP DATA (until backend is connected)
+    const orders = JSON.parse(localStorage.getItem("orders")) || [];
+
+    if (orders.length === 0) {
+        ordersContainer.innerHTML =
+            "<p class='empty'>No orders found</p>";
+    } else {
+        orders.forEach((order, index) => {
+            const div = document.createElement("div");
+            div.className = "order";
+
+            let itemsHTML = "";
+            order.items.forEach(item => {
+                itemsHTML += `
+                    <div class="item">
+                        ${item.name} - ₹${item.price} × ${item.quantity}
+                    </div>
+                `;
+            });
+
+            div.innerHTML = `
+                <h3>Order #${index + 1}</h3>
+                <p><strong>Total:</strong> ₹${order.total}</p>
+                <p><strong>Payment:</strong> ${order.paymentMethod}</p>
+                <p><strong>Status:</strong> ${order.status}</p>
+                <p><strong>Items:</strong></p>
+                ${itemsHTML}
+            `;
+
+            ordersContainer.appendChild(div);
+        });
+    }
+</script>
+
+</body>
+</html>

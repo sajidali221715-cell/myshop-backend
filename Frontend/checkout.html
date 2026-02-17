@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Checkout</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f4f6f8;
+}
+
+/* Header */
+header {
+  background: #2e7d32;
+  color: white;
+  padding: 18px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* Layout */
+.checkout-wrapper {
+  max-width: 1100px;
+  margin: 30px auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  padding: 0 15px;
+}
+
+/* Card */
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+/* Titles */
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+/* Inputs */
+input, textarea, select {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 2px rgba(46,125,50,0.15);
+}
+
+textarea {
+  resize: none;
+}
+
+/* Row */
+.row {
+  display: flex;
+  gap: 14px;
+}
+
+/* Order items */
+.item {
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+  font-size: 14px;
+}
+
+/* Summary */
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.total {
+  font-size: 18px;
+  font-weight: 700;
+  border-top: 1px solid #eee;
+  padding-top: 14px;
+  margin-top: 14px;
+}
+
+/* Button */
+button {
+  width: 100%;
+  background: linear-gradient(135deg, #2e7d32, #43a047);
+  color: white;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(46,125,50,0.3);
+}
+
+/* Trust */
+.trust {
+  font-size: 13px;
+  color: #777;
+  text-align: center;
+  margin-top: 12px;
+}
+
+/* Error */
+.error {
+  color: red;
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+/* Empty */
+.empty {
+  text-align: center;
+  font-size: 18px;
+  color: gray;
+}
+
+/* Sticky summary */
+.order-summary {
+  position: sticky;
+  top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .checkout-wrapper {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>Checkout</header>
+
+<div class="checkout-wrapper" id="checkoutContainer"></div>
+
+<script>
+const checkoutContainer = document.getElementById("checkoutContainer");
+const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+if (cart.length === 0) {
+  checkoutContainer.innerHTML = "<p class='empty'>Your cart is empty</p>";
+} else {
+  let total = 0;
+  let itemsHTML = "";
+
+  cart.forEach(item => {
+    total += item.price * item.quantity;
+    itemsHTML += `
+      <div class="item">
+        <strong>${item.name}</strong><br>
+        ₹${item.price} × ${item.quantity}
+      </div>
+    `;
+  });
+
+  checkoutContainer.innerHTML = `
+    <!-- LEFT -->
+    <div class="card">
+      <div class="section-title">Delivery Details</div>
+
+      <input type="text" id="name" placeholder="Full Name">
+      <input type="tel" id="phone" placeholder="Phone Number">
+      <textarea rows="3" id="address" placeholder="Full Address"></textarea>
+
+      <div class="row">
+        <input type="text" id="city" placeholder="City">
+        <input type="number" id="pincode" placeholder="Pincode">
+      </div>
+
+      <div class="section-title" style="margin-top:20px;">Payment Method</div>
+
+      <select id="paymentMethod">
+        <option value="">Select Payment Method</option>
+        <option value="COD">Cash on Delivery</option>
+      </select>
+
+      <div class="error" id="errorMsg"></div>
+
+      <button onclick="placeOrder()">Place Order</button>
+
+      <div class="trust">
+        🔒 Secure Payment • 🚚 Fast Delivery
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="card order-summary">
+      <div class="section-title">Order Summary</div>
+      ${itemsHTML}
+
+      <div class="total">
+        Total: ₹${total}
+      </div>
+    </div>
+  `;
+}
+
+function placeOrder() {
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const address = document.getElementById("address").value.trim();
+  const city = document.getElementById("city").value.trim();
+  const pincode = document.getElementById("pincode").value.trim();
+  const paymentMethod = document.getElementById("paymentMethod").value;
+  const errorMsg = document.getElementById("errorMsg");
+
+  errorMsg.innerText = "";
+
+  if (!name || !phone || !address || !city || !pincode || !paymentMethod) {
+    errorMsg.innerText = "All fields are required!";
+    return;
+  }
+
+  if (phone.length !== 10) {
+    errorMsg.innerText = "Enter valid 10-digit phone number";
+    return;
+  }
+
+  if (pincode.length !== 6) {
+    errorMsg.innerText = "Enter valid 6-digit pincode";
+    return;
+  }
+
+  const orderData = {
+    customerName: name,
+    phone,
+    address,
+    city,
+    pincode,
+    paymentMethod,
+    items: cart,
+    total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    status: "Pending",
+    orderDate: new Date()
+  };
+
+  fetch("http://localhost:5000/order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(orderData)
+  })
+  .then(res => res.json())
+  .then(() => {
+    alert("✅ Order placed successfully!");
+    localStorage.removeItem("cart");
+    window.location.href = "index.html";
+  })
+  .catch(() => {
+    errorMsg.innerText = "Something went wrong. Please try again.";
+  });
+}
+</script>
+
+</body>
+</html>
