@@ -51,6 +51,10 @@ app.post("/api/auth/login", (req, res) => {
 const productRoutes = require("./routes/productRoutes");
 app.use("/api/products", productRoutes);
 
+/* ================= ORDER ROUTES ================= */
+const orderRoutes = require("./routes/orderRoutes");
+app.use("/api/orders", orderRoutes);
+
 /* ================= SERVER START ================= */
 const PORT = process.env.PORT || 5003;
 app.listen(PORT, () => {

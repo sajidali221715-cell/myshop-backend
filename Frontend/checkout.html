@@ -263,7 +263,7 @@ function placeOrder() {
     orderDate: new Date()
   };
 
-  fetch("http://localhost:5000/order", {
+  fetch("http://localhost:5003/api/orders/place", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(orderData)
